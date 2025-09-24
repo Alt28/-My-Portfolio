@@ -16,33 +16,92 @@ sidebarBtn.addEventListener("click", function () { elementToggleFunc(sidebar); }
 
 
 
-// custom select variables
+// custom select variables (legacy - keep for compatibility)
 const select = document.querySelector("[data-select]");
 const selectItems = document.querySelectorAll("[data-select-item]");
 const selectValue = document.querySelector("[data-select-value]");
+
+// New modern filter buttons
+const filterBtns = document.querySelectorAll(".filter-btn");
+const projectCards = document.querySelectorAll(".project-card");
+
+// Legacy filter buttons (for backward compatibility)
 const filterBtn = document.querySelectorAll("[data-filter-btn]");
 
-select.addEventListener("click", function () { elementToggleFunc(this); });
+// Add event listeners to new filter buttons
+filterBtns.forEach(btn => {
+  btn.addEventListener("click", function() {
+    // Remove active class from all buttons
+    filterBtns.forEach(button => button.classList.remove("active"));
+    
+    // Add active class to clicked button
+    this.classList.add("active");
+    
+    // Get filter value
+    const filterValue = this.getAttribute("data-filter-btn") || this.textContent.toLowerCase();
+    
+    // Filter projects
+    filterProjects(filterValue);
+  });
+});
 
-// add event in all select items
-for (let i = 0; i < selectItems.length; i++) {
-  selectItems[i].addEventListener("click", function () {
-
-    let selectedValue = this.innerText.toLowerCase();
-    selectValue.innerText = this.innerText;
-    elementToggleFunc(select);
-    filterFunc(selectedValue);
-
+// Updated filter function for new structure
+function filterProjects(category) {
+  // Normalize the category name to lowercase for comparison
+  const normalizedCategory = category.toLowerCase().trim();
+  
+  projectCards.forEach(card => {
+    const cardCategory = card.getAttribute("data-category");
+    const normalizedCardCategory = cardCategory ? cardCategory.toLowerCase().trim() : "";
+    
+    if (normalizedCategory === "all projects" || 
+        normalizedCategory === "all" || 
+        normalizedCardCategory === normalizedCategory) {
+      card.classList.add("show");
+      setTimeout(() => {
+        card.style.display = "block";
+      }, 10);
+    } else {
+      card.classList.remove("show");
+      setTimeout(() => {
+        if (!card.classList.contains("show")) {
+          card.style.display = "none";
+        }
+      }, 300);
+    }
   });
 }
 
-// filter variables
+// Initialize - show all projects
+document.addEventListener("DOMContentLoaded", function() {
+  // Show all projects initially
+  projectCards.forEach(card => {
+    card.classList.add("show");
+    card.style.display = "block";
+  });
+});
+
+// Legacy code for backward compatibility
+if (select) {
+  select.addEventListener("click", function () { elementToggleFunc(this); });
+}
+
+// add event in all select items (legacy)
+for (let i = 0; i < selectItems.length; i++) {
+  selectItems[i].addEventListener("click", function () {
+    let selectedValue = this.innerText.toLowerCase();
+    if (selectValue) selectValue.innerText = this.innerText;
+    if (select) elementToggleFunc(select);
+    filterProjects(selectedValue);
+  });
+}
+
+// filter variables (legacy)
 const filterItems = document.querySelectorAll("[data-filter-item]");
 
 const filterFunc = function (selectedValue) {
-
+  // Legacy filter function - kept for compatibility
   for (let i = 0; i < filterItems.length; i++) {
-
     if (selectedValue === "all") {
       filterItems[i].classList.add("active");
     } else if (selectedValue === filterItems[i].dataset.category) {
@@ -50,28 +109,25 @@ const filterFunc = function (selectedValue) {
     } else {
       filterItems[i].classList.remove("active");
     }
-
   }
-
+  
+  // Also apply to new structure
+  filterProjects(selectedValue);
 }
 
-// add event in all filter button items for large screen
+// add event in all filter button items for large screen (legacy)
 let lastClickedBtn = filterBtn[0];
 
 for (let i = 0; i < filterBtn.length; i++) {
-
   filterBtn[i].addEventListener("click", function () {
-
     let selectedValue = this.innerText.toLowerCase();
-    selectValue.innerText = this.innerText;
+    if (selectValue) selectValue.innerText = this.innerText;
     filterFunc(selectedValue);
 
-    lastClickedBtn.classList.remove("active");
+    if (lastClickedBtn) lastClickedBtn.classList.remove("active");
     this.classList.add("active");
     lastClickedBtn = this;
-
   });
-
 }
 
 
