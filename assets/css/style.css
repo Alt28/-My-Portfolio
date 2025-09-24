@@ -1313,11 +1313,7 @@ main {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    135deg, 
-    rgba(255, 183, 3, 0.8), 
-    rgba(252, 176, 64, 0.8)
-  );
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1327,8 +1323,8 @@ main {
 }
 
 .project-card:hover .project-overlay {
-  opacity: 1;
-  visibility: visible;
+  opacity: 0;
+  visibility: hidden;
 }
 
 .project-actions {
